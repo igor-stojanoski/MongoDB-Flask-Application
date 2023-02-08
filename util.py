@@ -111,7 +111,7 @@ def range_slider(range1=0, range2=20):
 
     slider_list = []
     
-    #Iterate over the MongDB with range as argument and decrypting with Fernet.
+    #Iterate over the MongoDB with range as argument and decrypting with Fernet.
     for x in list(mycol.find())[range1:range2]:
         _id = list(x.items())[0][1]
         comp_name = fernet.decrypt(bytes(list(x.items())[1:2][0][0][2:-1], 'utf-8')).decode('utf-8')
@@ -125,5 +125,3 @@ def range_slider(range1=0, range2=20):
    
     return slider_list
 
-
-filter_names()
