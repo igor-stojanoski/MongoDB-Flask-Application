@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flask App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css" integrity="sha512-qveKnGrvOChbSzAdtSs8p69eoLegyh+1hwOMbmpCViIwj7rn4oJjdmMvWOuyQlTOZgTlZA0N2PXA7iA8/2TUYA==" crossorigin="anonymous" referrerpolicy="no-referrer" />	
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js" integrity="sha512-1mDhG//LAjM3pLXCJyaA+4c+h5qmMoTc7IuJyuNNPaakrWT9rVTxICK4tIizf7YwJsXgDC2JP74PGCc7qxLAHw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>	
+
+<style>
+  .c-1-color { background: rgb(10, 80, 10); }
+  .c-2-color { background: rgb(10, 220, 10); }
+  .c-3-color { background: rgb(10, 80, 10); }
+  .noUi-handle {
+  border: 1px solid rgb(39, 209, 243);
+  border-radius: 5px;
+  background: rgb(39, 209, 243);
+  cursor: default;
+  box-shadow: inset 0 0 1px rgb(39, 209, 243),inset 0 1px 7px rgb(39, 209, 243),0 3px 6px -3px rgb(39, 209, 243);
+  }
+  .btn:disabled {
+    background-color: rgb(74, 108, 92);
+  }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="col-4">
+    <center>
+    <br />
+    <form action="/mongo" method="post" >
+      <select class="form-select form-select-sm" style="width:95%" name="dropdown" id="select1" aria-label="Select dropdown">
+        <option value="" selected>Choose how many results to show</option>
+        <option value="20">20</option>
+        <option value="100">100</option>
+        <option value="300">300</option>
+        <option value="500">500</option> 
+        <option value="1000">1000</option>
+        <option value="3000">3000</option>
+        <option value="5000">5000</option>
+        <option value="10000">10000</option>
+        <option value="15000">15000</option>
+        <option value="20000">20000</option>
+      </select>
+      <br />
+      <input type="number" class="form-control form-control-sm" style="width:95%" name="input-field" id="input1" placeholder="Enter how many result to show" aria-label="Input field" min="1" max="20000" oninput="(validity.valid)||(value='20');">
+      <br /><br /><br />
+      <div id="range1" name="range-field" style="width: 95%;"></div> 
+      <br /><br /><br />
+      <input id="range-input-start" type="number" name="range-start" step="100" style="width: 25%; text-align: center;">&nbsp; &nbsp; &nbsp; 
+      <input id="range-input-end" type="number" name="range-end" step="100" style="width: 25%; text-align: center;">
+      <br /><br /><br /><br /><br />
+
+      <input type="radio" class="btn-check btn-warning" name="options-outlined" id="success-outlined" value="json" autocomplete="off" checked>
+      <label class="btn btn-outline-warning" for="success-outlined">JSON Response</label>&nbsp; &nbsp; &nbsp; 
+      
+      <input type="radio" class="btn-check btn-info" name="options-outlined" id="danger-outlined" value="table" autocomplete="off">
+      <label class="btn btn-outline-info" for="danger-outlined">Generate table</label>
+      <br /><br /><br />
+      <input type="submit" class="btn btn-success" id="submit1" value="Show MongoDB results">
+    </form>
+    <br /><br />
+    <form action="/results" method="post">
+      <input type="submit" id="button-sqlite" value="Filter SQLite Database">
+    </form>
+    </center>
+  </div>
+  <div class="col-8">
+    <br />
+    <input class="form-control" id="search-input" type="text" placeholder="Search.." style="width: 30%; display: none;">
+  <br>
+<table class="table table-hover table-bordered border-dark" id="table1" style="width: 95%;">
+    <thead class="border border-2 border-dark table-info " style="position: sticky;top: 0">
+      <tr>
+        {% for col in colnames %}
+            <th>{{ col }}</th>
+        {% endfor %}
+
+      </tr>
+    </thead>
+    <tbody id="mongo-table">
+    {% for dat in records %}
+      <tr>
+            {% for k, v in dat.items() %}
+                <th scope="row">{{ v[0]['id'] }}</th>
+                <td>{{ k }}</td>
+                <td>{{ v[0]['country_iso'] }}</td>
+                <td>{{v[0]['city']}}</td>
+                <td>{{v[0]['nace']}}</td>
+                <td>{{v[0]['website']}}</td>
+            {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.3.slim.min.js" integrity="sha256-ZwqZIVdD3iXNyGHbSYdsmWP//UBokj2FHAxKuSBKDSo=" crossorigin="anonymous"></script>
+
+    <!-- Range Slider -->
+    <script>
+      var formatForSlider = {
+          from: function (formattedValue) {
+              return Number(formattedValue);
+          },
+          to: function(numericValue) {
+              return Math.round(numericValue);
+          }
+      };
+
+      var slider = document.getElementById('range1');
+      var input0 = document.getElementById('range-input-start');
+      var input1 = document.getElementById('range-input-end');
+      var inputs = [input0, input1];
+
+      noUiSlider.create(slider, {
+          // Values are parsed as numbers using the "from" function in "format"
+          start: [8000, 12000],
+          pips: {mode: 'count', values: 5, density: 5},
+          connect: [true, true, true],
+          range: {
+              'min': 0,
+              'max': 20000
+          },
+          step: 100,
+          format: formatForSlider,
+          tooltips: {
+              // tooltips are output only, so only a "to" is needed
+              to: function(numericValue) {
+                  return numericValue.toFixed(0);
+              }
+          }
+      });
+
+      var connect = slider.querySelectorAll('.noUi-connect');
+      var classes = ['c-1-color', 'c-2-color', 'c-3-color'];
+
+      for (var i = 0; i < connect.length; i++) {
+          connect[i].classList.add(classes[i]);
+      }
+
+      // Values are parsed as numbers using the "from" function in "format"
+      slider.noUiSlider.set([7000, 11000]);
+
+      slider.noUiSlider.on('update', function (values, handle) {
+          inputs[handle].value = values[handle];
+      });
+
+      // Listen to keydown events on the input field.
+      inputs.forEach(function (input, handle) {
+
+        input.addEventListener('change', function () {
+            slider.noUiSlider.setHandle(handle, this.value);
+        });
+      });
+    </script>
+
+
+    <script>
+      const select = document.getElementById("select1");
+      const input = document.getElementById("input1");
+      const submit = document.getElementById("submit1");
+      const start = document.getElementById("range-input-start");
+      const end = document.getElementById("range-input-end");
+
+      input.addEventListener("change", function() {
+        if (input.value !== "") {
+          select.disabled = true;
+          document.getElementById("range1").setAttribute("disabled", true);
+          start.disabled = true;
+          end.disabled = true;
+        } else {
+          document.getElementById("range1").removeAttribute("disabled");
+          select.disabled = false;
+          start.disabled = false;
+          end.disabled = false;
+        }
+      });
+      select.addEventListener("change", function() {
+        if (select.value !== "") {
+          input.disabled = true;
+          document.getElementById("range1").setAttribute("disabled", true);
+          start.disabled = true;
+          end.disabled = true;
+        } else {
+          document.getElementById("range1").removeAttribute("disabled");
+          input.disabled = false;
+          start.disabled = false;
+          end.disabled = false;
+        }
+      });
+    </script>
+
+    <script>
+      $(document).ready(function() {
+        if($('#button-sqlite').is(':disabled'))
+          $('#submit1').attr('disabled',false);
+        else
+          $('#submit1').attr('disabled', true);
+        });
+    </script>    
+
+    <script>
+      $(document).ready(function(){
+        $("#search-input").on("keyup", function() {
+          var value = $(this).val().toLowerCase();
+          $("#mongo-table tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+      });
+    </script>
+
+    <script>
+      $(document).ready(function() {
+        if($('#table1').find('td').length === 0){
+          $("#search-input").hide();
+      }else{
+        $("#search-input").show();
+      }
+      });
+    </script>
+
+    <script type="text/javascript">
+      var disbledBtn = sessionStorage.getItem('disabled'); // get the id from sessionStorage
+      $(disbledBtn).attr("disabled", true); // set the attribute by the id
+
+      $('#button-sqlite').click(function () {
+        $("#button-sqlite").attr("disabled", true);
+        $("#button-sqlite").attr("disabled", false);
+        sessionStorage.setItem('disabled', '#button-sqlite'); // store the id in sessionStorage
+      });
+    </script>
+    <script type="text/javascript">
+      var alerted = sessionStorage.getItem('alerted') || '';
+      if ((alerted != 'yes') && window.location.href === 'http://127.0.0.1:5000/results') {
+       alert("SQLite3 data has been successfully filtered.");
+       sessionStorage.setItem('alerted','yes');
+      }
+    </script>
+</body>
+</html>
