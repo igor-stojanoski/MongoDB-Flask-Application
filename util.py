@@ -1,9 +1,6 @@
 from cleanco import basename
 import re
 import pandas as pd
-import pymongo
-import sqlite3
-import pymongo
 from cryptography.fernet import Fernet
 from config import connect_sqlite, connect_mongo, secret_key
 
@@ -42,6 +39,13 @@ def filter_names():
         df['nace'] = df['nace'].astype('Int64').astype('string')
         # Concatenating the dataframe 'cleaned_name_df' with the dataframe 'df'
         cleaned_name_df = pd.concat([cleaned_name_df, df])
+    
+    cleaned_name_df.to_sql("companies", conn, if_exists='replace', index=False)
+    
+    # # Check if column "company_name_cleaned" is empty.
+    # check_column = pd.read_sql("SELECT company_name_cleaned FROM companies", conn)
+    # if pd.isnull(check_column['company_name_cleaned']).all():
+    #     return cleaned_name_df.to_sql("companies", conn, if_exists='replace', index=False)
 
 
     list_to_mongo = []
@@ -66,10 +70,6 @@ def filter_names():
     # Insert encrypted data to MongoDB.
     mycol.insert_many(list_to_mongo)
 
-    # Check if column "company_name_cleaned" is empty.
-    check_column = pd.read_sql("SELECT company_name_cleaned FROM companies", conn)
-    if pd.isnull(check_column['company_name_cleaned']).all():
-        return cleaned_name_df.to_sql("companies", conn, if_exists='replace', index=False)
     
 def to_mongo(test=0):  
     """Get encrypted records from MongoDB, decrypts them with Fernet and return a list of dicts.
